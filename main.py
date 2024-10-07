@@ -12,6 +12,7 @@ def main():
     # Count the occurrences for each strength level and Plot of the class distribution
     #result = df.count_strengths(np_dataset)
     #df.plot_strength_distribution(result)
+    #
 
     # calculate the password features, both normalized and unnormalized.
     features = fc.calculate_password_features(passwords, norm=False)

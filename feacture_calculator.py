@@ -58,3 +58,5 @@ def calculate_password_features(passwords, norm=False):
     features = np.column_stack((digit_counts, lowercase_counts, uppercase_counts, special_char_counts,
                                 unique_char_counts, lengths))
     return features
+
+#
