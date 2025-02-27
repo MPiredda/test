@@ -12,6 +12,30 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import confusion_matrix
 
+import numpy as np
+
+
+def plot_feature_importance(model, feature_names, model_name):
+    importance = model.feature_importances_
+    indices = np.argsort(importance)[::-1]  # Ordina per importanza decrescente
+
+    plt.figure(figsize=(8, 6))
+    plt.title(f"Feature Importance - {model_name}")
+    plt.bar(range(len(feature_names)), importance[indices], align="center")
+    plt.xticks(range(len(feature_names)), np.array(feature_names)[indices], rotation=45)
+    plt.xlabel("Feature")
+    plt.ylabel("Importance Score")
+    plt.show()
+
+
+def get_mlp_feature_importance(mlp, feature_names):
+    weights = np.mean(np.abs(mlp.coefs_[0]), axis=1)  # Media dei pesi assoluti del primo layer
+    for feature, weight in zip(feature_names, weights):
+        print(f"{feature}: {weight:.4f}")
+
+
+
+
 
 # Function to load, shuffle and prepare the dataset
 def load_and_prepare_data(file_path):
@@ -238,7 +262,7 @@ def evaluate_xgboost(xgb, X_test, y_test):
 
 # Main function
 def main():
-    file_path = 'dataset_normalized_features.csv'
+    file_path = 'password_features_norm.csv'
     X, y = load_and_prepare_data(file_path)
 
     # First split: training (70%) and test+validation (30%)
@@ -253,6 +277,13 @@ def main():
     rf, _ = train_rf(X_train, y_train)
     dnn, scaler_dnn, _ = train_dnn(X_train, y_train)
     xgb, _ = train_xgboost(X_train, y_train)
+
+    #feacture importance
+    plot_feature_importance(rf, ['Digit Count', 'Lowercase Count', 'Uppercase Count'], "Random Forest")
+    plot_feature_importance(xgb, ['Digit Count', 'Lowercase Count', 'Uppercase Count'], "XGBoost")
+    get_mlp_feature_importance(mlp, ['Digit Count', 'Lowercase Count', 'Uppercase Count'])
+    get_mlp_feature_importance(dnn, ['Digit Count', 'Lowercase Count', 'Uppercase Count'])
+
 
     # Evaluate models on the validation set
     print("\nEvaluating on validation set:")
@@ -308,6 +339,10 @@ def main():
     plot_roc_curve(xgb, X_test, y_test, model_name="XGBoost")
 
 
+
+
 if __name__ == '__main__':
     main()
+
+
 #

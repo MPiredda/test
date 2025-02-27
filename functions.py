@@ -1,37 +1,37 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import entropy
-
-def password_length(password):
-    lengths = np.array([len(str(psw)) for psw in password])
-    return lengths
+import csv
 
 
-def password_entropy(password):
-    entropy_values = np.array([entropy([ord(char) for char in str(psw)], base=2) for psw in password], dtype=np.float64)
-    return entropy_values
+
+def save_to_file(data, file_name):
+    """
+    Save passwords to a file, one password per line.
+
+    Args:
+    - passwords (list or numpy array): List or array of passwords.
+    - file_name (str): The name of the file to save passwords.
+    """
+    # Open the file with utf-8 encoding
+    with open(file_name, 'w', encoding='utf-8') as file:
+        for data in data:
+            file.write(data + '\n')
 
 
-def password_complessity(passwords):
+def clean_and_filter_csv(input_file, output_file):
+    """
+    Cleans and filters a CSV file by removing malformed rows and ensuring the first column
+    has between 4 and 30 characters.
 
-    complessity = np.array([str(psw) for psw in passwords])
-    scores = np.zeros(len(passwords), dtype=int)
+    Args:
+        input_file: Path to the input CSV file.
+        output_file: Path to the output cleaned CSV file.
+    """
 
-    for i, password in enumerate(complessity):
-        score = 0
+    with open(input_file, 'r', newline='', encoding='utf-8') as infile:
+        reader = csv.reader(infile)
+        cleaned_rows = [row for row in reader if len(row) == 2 and 4 <= len(row[0]) <= 30]
 
-        if any(char.islower() for char in password):
-            score += 1
-        if any(char.isupper() for char in password):
-            score += 1
-        if any(char.isdigit() for char in password):
-            score += 1
-        if any(char.isascii() and not char.isalnum() for char in password):
-            score += 1
-
-        scores[i] = score
-
-        # str.istitle() vedere se aggiungerlo
-
-    return scores
-
+    with open(output_file, 'w', newline='', encoding='utf-8') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerows(cleaned_rows)
